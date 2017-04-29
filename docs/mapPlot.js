@@ -1,7 +1,7 @@
 var padding = 50;
 var el = document.getElementById('map')
 var width = map.offsetWidth
-var height = 880;
+var height = 700;
 var width_hour = (window.innerWidth-120)/24
 
 var path = d3.geoPath();
@@ -15,7 +15,7 @@ for(var i=0; i<24; i++){
 map  = null
 hour = 7
 total_accidents = 0
-interval = 1000
+interval = 1200
 
 d3.json(directory_map, function (error, json) {
   if (error) {
@@ -27,8 +27,8 @@ d3.json(directory_map, function (error, json) {
     d3.csv(directory_dataset, function (error, csv) {
 
       for(var i=0; i<csv.length;i++){
-        var hour = parseInt(Number(csv[i]['hour']))
-        dataset[hour].push({
+        var h = parseInt(Number(csv[i]['hour']))
+        dataset[h].push({
           'count': parseInt(csv[i]['count']),
           'lat': parseFloat(csv[i]['lat']),
           'lon': parseFloat(csv[i]['lon'])
@@ -41,7 +41,6 @@ d3.json(directory_map, function (error, json) {
       } else {
         console.log("Data has been loaded.")
         plotMap()
-        window.setInterval(updateMap, interval);
       }
     })
   }
@@ -62,14 +61,14 @@ var plotMap = function(){
                                            .attr('x',0)
                                            .attr('y',100)
                                            .attr("width", window.innerWidth-70)
-                                           .attr("height", 25)
+                                           .attr("height", 20)
                                            .style('fill', '#b8dced')
 
    svgContainerRectangle.append("rect")
                          .attr("x", 50)
                          .attr("y", 0)
                          .attr("width", window.innerWidth-120)
-                         .attr("height", 25)
+                         .attr("height", 20)
                          .attr('stroke-width', '1')
                          .attr('stroke', 'black')
                          .attr('rx', 8)
@@ -80,7 +79,7 @@ var plotMap = function(){
                          .attr("x", width_hour*hour)
                          .attr("y", 0)
                          .attr("width", width_hour)
-                         .attr("height", 25)
+                         .attr("height", 20)
                          .attr('stroke-width', '1')
                          .attr('stroke', 'black')
                          .attr("id", "hour-rect")
@@ -90,15 +89,15 @@ var plotMap = function(){
 
   svgContainerRectangle.append("text")
                          .attr("x", width_hour*hour+width_hour/2)
-                         .attr("y", 20)
+                         .attr("y", 16)
                          .attr("width", width_hour)
-                         .attr("height", 25)
+                         .attr("height", 20)
                          .attr("class", "hour")
                          .style('fill', 'white')
-                         .style("font-size","20px")
-                         .style('font-weight', 900)
+                         .style("font-size","0.8em")
+                         .style('font-weight', 600)
                          .style("text-anchor", "middle")
-                         .text(hour)
+                         .text(hourToString(hour))
                          .attr("id", "hour-text")
 
   svgContainer.selectAll("path")
@@ -109,10 +108,58 @@ var plotMap = function(){
               .style('fill', 'white')
 
 
-  circlesGeo = svgContainer.selectAll("circle")
+  circles = svgContainer.selectAll("circle")
+              .data(data)
+              .enter()
+              .append("circle")
+              .attr("cx", function(d) {
+                return projection([d['lon'],d['lat']])[0]
+               })
+              .attr("cy", function(d) {
+                return projection([d['lon'],d['lat']])[1]
+              })
+              .attr("r", function(d) {
+                return d['count']/total_accidents*24*365*10;
+              })
+              .attr("fill", "steelblue")
+              .attr('stroke-width', '0.2')
+              .attr('stroke', 'black')
+
+    window.setTimeout(updateMap, interval);
+}
+
+function hourToString(h){
+  if( h < 12)
+    return h+'am'
+  else if( h == 12)
+    return 12+'pm'
+  else if( h == 0)
+    return 12+'am'
+  else
+    return (h % 12)+'pm'
+}
+
+function updateMap(){
+  hour = (hour + 1) % 24
+  data = dataset[hour]
+
+  svgContainerRectangle.selectAll('#hour-rect')
+                       .transition()
+                       .duration(interval/2)
+                       .attr("x", (width_hour*hour+50))
+                       .style("fill", "steelblue")
+
+  svgContainerRectangle.selectAll('#hour-text')
+                        .transition()
+                        .duration(interval/2)
+                        .attr("x", width_hour*hour+width_hour/2+50)
+                        .text(hourToString(hour))
+
+  circles.remove()
+  circles = svgContainer.selectAll("circle")
                         .data(data)
                         .enter()
-                        .append("circle")
+                        .append('circle')
                         .attr("cx", function(d) {
                           return projection([d['lon'],d['lat']])[0]
                          })
@@ -122,41 +169,9 @@ var plotMap = function(){
                         .attr("r", function(d) {
                           return d['count']/total_accidents*24*365*10;
                         })
-                        .attr("fill", "steelblue")
+                        .attr('fill', 'steelblue')
                         .attr('stroke-width', '0.2')
                         .attr('stroke', 'black')
-}
 
-function updateMap(){
-  hour = (hour + 1) % 24
-  data = dataset[hour]
-
-  circlesGeo = svgContainer.selectAll("circle").remove()
-                          .data(data)
-                          .enter()
-                          .append('circle')
-                          .attr("cx", function(d) {
-                            return projection([d['lon'],d['lat']])[0]
-                           })
-                          .attr("cy", function(d) {
-                            return projection([d['lon'],d['lat']])[1]
-                          })
-                          .attr("r", function(d) {
-                            return d['count']/total_accidents*24*365*10;
-                          })
-                          .attr('fill', 'steelblue')
-                          .attr('stroke-width', '0.2')
-                          .attr('stroke', 'black')
-
-  svgContainerRectangle.selectAll('#hour-rect')
-                       .transition()
-                       .duration(interval/2)
-                       .attr("x", (width_hour*hour+50))
-                       .style("fill", "steelblue")
-
-   svgContainerRectangle.selectAll('#hour-text')
-                        .transition()
-                        .duration(interval/2)
-                        .attr("x", width_hour*hour+width_hour/2+50)
-                        .text(hour)
+  window.setTimeout(updateMap, interval);
 }
