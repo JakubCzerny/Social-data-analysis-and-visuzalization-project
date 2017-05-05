@@ -1,7 +1,7 @@
 var padding = 50;
 var el = document.getElementById('gauge')
 var width = el.offsetWidth
-var height = 700;
+var height = 350
 var directory_dataset = "data/gauge.csv"
 dataset = []
 max_score = 100
@@ -165,12 +165,10 @@ function getCapacityBand(capacity){
     }
   }
 
-  return max_capacity_band
+  return capacities.length
 }
 
 function updateGauge(age, gender, vehicle_age, engine_capacity){
-  console.log(getCapacityBand(engine_capacity));
-
   data = {'age_band':getAgeBand(age), 'sex':parseInt(gender), 'vehicle_age':getVehicleAgeBand(vehicle_age), 'engine_capacity':getCapacityBand(engine_capacity)}
 
   for(var i=0; i<dataset.length; i++){
