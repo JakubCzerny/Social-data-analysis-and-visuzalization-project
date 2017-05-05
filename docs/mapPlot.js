@@ -1,7 +1,7 @@
 var padding = 50;
 var el = document.getElementById('map')
-var width = map.offsetWidth
-var height = 700;
+var width = el.offsetWidth
+var height = 700
 var width_hour = (window.innerWidth-120)/24
 
 var path = d3.geoPath();
