@@ -55,21 +55,133 @@
 						<!-- Content -->
 							<div class="wrapper">
 								<div class="inner">
-									<div class='input'>
-										<input type="text" id='age' placeholder="Age">
-										<select id='gender'>
-										    <option value="" disabled="disabled" selected="selected">Gender</option>
-										    <option value="1">Male</option>
-										    <option value="2">Female</option>
-										</select>
-										<input type="text" id='vehicle_age' placeholder="Age of vehicle (years)">
-										<input type="text" id='engine_capacity' placeholder="Engine capacity (ccm)">
-										<input type="button" value="Calculate rating" onclick="calcuateRating()">
-									<div>
-									<div id='gauge'></div>
-									<script type="text/javascript" src="gauge.js"></script>
-								</div>
-							</div>
+									<h2>
+										Risk assessment
+									</h2>
+									<p>
+										If you ever got yourself an insurance for a vehicle you know the price varies a lot depending on your personal information and vehicle details that determine how likely you are to have an accident. Since we have an access to substantial amount of data, we decided to create our own tool that based on the past accidents would estimate the risk group you belong to.
+										<br><br>
+										Our estimator is based on the age and genger of a driver but also vehicle details such as its age and engine capacity.
+										Since our dataset did not contain any variable that could serve as a risk profiler directly, we created a new variable which is calculated using the input variables, information about past data including the severity of accidents or number of people injuries but also data about the entire population. This values are then used for creating 100 risk groups.
+										Once our dataset has been augmented with this extra variable, we built a classifier that tries to predict the risk group.
+										For this purpose we used simple decision tree that first has been tunned with aid of cross-validation.
+										During this process we performed a search of best values for `max_depth`, `min_samples_split` and `min_samples_leaf` using 5-fold CV. Although the accuracy of the classifier may seem to be rather low (50%), the actual performance for our purpose is much higher becase the predicted group is often off by 1 or 2 which might still be considered as a good approximation.
+										This could be improved by using lower number of risk groups but for the sake of nice and fine visualization we decided to go for a high number of groups.
+
+										<br><br>
+										So why is this useful and who can make use of it?
+										<br>
+										It's basically for everyone who is interested in estimating risk profile and getting to know how insurance company percept you.
+									</p>
+
+									<div class='gauge-wrapper'>
+										<div class='input'>
+											<input type="text" id='age' placeholder="Age">
+											<select id='gender'>
+											    <option value="" disabled="disabled" selected="selected">Gender</option>
+											    <option value="1">Male</option>
+											    <option value="2">Female</option>
+											</select>
+											<input type="text" id='vehicle_age' placeholder="Age of vehicle (years)">
+											<input type="text" id='engine_capacity' placeholder="Engine capacity (ccm)">
+											<input type="button" value="Calculate rating" onclick="calcuateRating()">
+
+											<div>
+												<div id='gauge'></div>
+												<script type="text/javascript" src="gauge.js"></script>
+											</div>
+										</div>
+									</div>
+
+
+									<hr>
+									<div class='danger-wrapper'>
+										<h2>
+											Accident severity
+										</h2>
+										<p>
+											Another interesting thing to look at is the severity of the accident. Unfortunatelly, we only have 3 different values describing the severity which are slight injury, serious injury and fatal.
+											Nevertheless, we thought it was worth trying to predict the outcome of the accidents.
+											<br>
+											Since the data was highly inbalanced in terms of the amount of each kind of accident, we decided to try k-nearest-neighbour algorithm with low number for k.
+											It turned out that it was quite a good choice and a small k was capable of dealing with the inbalance.
+											In fact our dataset contained only 1.3% of fatal, 13.8% of serious injury accidents and 84.9% of slight injury accidents.
+											Our KNN algorithm when tested on the complete dataset outputted almost the same proportions with deviation of +- 1%.
+											<br>
+											Because this algorithm does not require model training and the output is deterministic. Consequently, this algorithm does not require to be validated.
+											On the other hard, we can still use validation technique such as CV for finding optimal set of parameters, which in our case are `n`= and `p`= that results in high accuracy of %.
+											<br><br>
+											Unfortunatelly, due to too high number of features and their possible values we could not use the same approach as before of performing exhaustive search and saving all possible combinations to file so we can load them on the website.
+											More details about this algorithm can be found on ______.
+											<br>
+										</p>
+
+										<h4>
+											Although it's not functioning, the possible input to the classifier could look as follows:
+										</h4>
+
+										<div class='input'>
+											<input type="text" id='age_danger' placeholder="Age">
+											<select id='gender_danger'>
+											    <option value="" disabled="disabled" selected="selected">Gender</option>
+											    <option value=1>Male</option>
+											    <option value=2>Female</option>
+											</select>
+
+											<select id='brand'>
+											    <option value="" disabled="disabled" selected="selected">Car brand</option>
+											    <option value=175>BMW</option>
+													<option value=192>Volvo</option>
+													<option value=146>Skoda</option>
+													<option value=77>Mercedes</option>
+													<option value=125>Renault</option>
+													<option disabled="disabled">Fiat</option>
+													<option disabled="disabled">Ford</option>
+													<option disabled="disabled">Audi</option>
+											</select>
+
+											<select id='weather'>
+											    <option value="" disabled="disabled" selected="selected">Weather</option>
+											    <option value=1>Fine, no wind</option>
+													<option value=5>Stormy</option>
+													<option value="" disabled="disabled">Snow</option>
+											</select>
+
+											<select id='road_surf'>
+											    <option value="" disabled="disabled" selected="selected">Road surface</option>
+											    <option value=1>Dry</option>
+													<option value=2>Wet</option>
+													<option disabled="disabled">Icy</option>
+											</select>
+
+											<select id='light'>
+											    <option value="" disabled="disabled" selected="selected">Light conditions</option>
+											    <option value=1>Daylight</option>
+											    <option value=2>Darkness</option>
+											</select>
+
+											<select id='vehicle'>
+												  <option value="" disabled="disabled" selected="selected">Vehicle type</option>
+													<option value=9>Car</option>
+													<option disabled="disabled">Lorry</option>
+													<option disabled="disabled">Bus</option>
+											</select>
+
+											<input type="text" id='vehicle_age_danger' placeholder='Age of vehicle'>
+											<input type="text" id='engine_capacity_danger' placeholder='Engine capacity'>
+											<input type="button" value="Estimate danger of an accident" onclick="estimateDanger()">
+
+											<div>
+												<div id='danger'></div>
+												<script type="text/javascript" src="danger.js"></script>
+											</div>
+										</div>
+
+										<h4>
+											In order to include fully working KNN classifier on the website, we could either implement KNN in javascript, or use our python code by hosting it on the online and sending a request to the URL where the function would be living.
+											Since these options were rather time consuming and beyond the content of the course we have not decided on either of them.
+										</h4>
+									</div>
 
 					</section>
 
