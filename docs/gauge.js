@@ -7,6 +7,7 @@ dataset = []
 max_score = 100
 max_capacity_band = 0
 sections = 1500
+min_score = 13
 
 d3.csv(directory_dataset, function (error, csv) {
   for(var i=0; i<csv.length;i++){
@@ -96,7 +97,7 @@ function displayGauge(){
               })
 }
 
-function getAgeBand(age){
+function getAgeBandGauge(age){
 // # Bins
 // # "0 - 15",
 // # "16 - 20",
@@ -128,7 +129,7 @@ function getAgeBand(age){
     return 11
 }
 
-function getVehicleAgeBand(age){
+function getVehicleAgeBandGauge(age){
   // if v_age == -1:
   //     pass
   // elif v_age <= 5:
@@ -154,22 +155,36 @@ function getVehicleAgeBand(age){
     return 5
 }
 
-function getCapacityBand(capacity){
+function getCapacityBandGauge(capacity){
   var capacities = [500,1000,1200,1500,1800,2000,2200,2500,2700,3000,3500]
-
+  console.log(capacity);
   for(var i=0; i<capacities.length; i++){
     c = capacities[i]
 
-    if(capacity <= c){
+    if(capacity < c){
       return (i)
     }
   }
 
-  return capacities.length
+  return capacities.length - 1
 }
 
 function updateGauge(age, gender, vehicle_age, engine_capacity){
-  data = {'age_band':getAgeBand(age), 'sex':parseInt(gender), 'vehicle_age':getVehicleAgeBand(vehicle_age), 'engine_capacity':getCapacityBand(engine_capacity)}
+  data = {'age_band':getAgeBandGauge(age), 'sex':parseInt(gender), 'vehicle_age':getVehicleAgeBandGauge(vehicle_age), 'engine_capacity':getCapacityBand(engine_capacity), 'score':min_score}
+
+  if(data['age_band'] < 4){
+    alert('You must be at least 16 to drive a car!')
+  } else {
+    if(data['vehicle_age'] < 0){
+      alert("The vehicle can't have negative age!")
+    } else {
+      if(engine_capacity < 50){
+        alert("What's your ride? lawn mower!?")
+      } else {
+
+      }
+    }
+  }
 
   for(var i=0; i<dataset.length; i++){
     d = dataset[i]
@@ -251,12 +266,10 @@ function calcuateRating(){
   var dropdown = document.getElementById("gender")
   var gender = dropdown.options[dropdown.selectedIndex].value;
 
-  updateGauge(age, gender, vehicle_age, engine_capacity)
-
-  // if(gender != '' && age != '' && vehicle_age != '' && engine_capacity != '' )
-  //   updateGauge(age, gender, vehicle_age, engine_capacity)
-  // else
-  //   alert("Please fill in all entries")
+  if(gender != '' && age != '' && vehicle_age != '' && engine_capacity != '' )
+    updateGauge(age, gender, vehicle_age, engine_capacity)
+  else
+    alert("Invalid input, please fill all the fields")
 }
 
 function getColor(value){
