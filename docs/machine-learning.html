@@ -34,9 +34,9 @@
 							<h2>Menu</h2>
 							<ul class="links">
 								<li><a href="index.html">Home</a></li>
-								<li><a href="stats.html">Road accidents statistics</a></li>
-								<li><a href="ml.html">Machine learning methods</a></li>
-								<li><a href="vis.html">D3 visualisations</a></li>
+								<li><a href="statistics.html">Road accidents statistics</a></li>
+								<li><a href="machine-learning.html">Machine learning methods</a></li>
+								<li><a href="visualization.html">D3 visualisations</a></li>
 							</ul>
 							<a href="#" class="close">Close</a>
 						</div>
@@ -47,8 +47,6 @@
 						<header>
 							<div class="inner">
 								<h2>Machine learning models</h2>
-								<p>An overview of the machine learning methods used</p>
-								<p>Check your rating based on your age, gender, age of the car and capacity of an engine</p>
 							</div>
 						</header>
 
@@ -112,13 +110,16 @@
 											On the other hard, we can still use validation technique such as CV for finding optimal set of parameters, which in our case are `n`= and `p`= that results in high accuracy of %.
 											<br><br>
 											Unfortunatelly, due to too high number of features and their possible values we could not use the same approach as before of performing exhaustive search and saving all possible combinations to file so we can load them on the website.
-											More details about this algorithm can be found on ______.
+											More details on this algorithm and implementation can be found on in following notebook.
 											<br>
 										</p>
 
-										<h4>
+										<iframe src="http://nbviewer.jupyter.org/github/JakubCzerny/Social-data-analysis-and-visuzalization-project/blob/master/utils/Explainer%20notebook.ipynb" height='600px' width='100%'>
+										</iframe>
+										<br><br>
+										<h5>
 											Although it's not functioning, the possible input to the classifier could look as follows:
-										</h4>
+										</h5>
 
 										<div class='input'>
 											<input type="text" id='age_danger' placeholder="Age">
